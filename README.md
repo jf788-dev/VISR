@@ -26,19 +26,19 @@ cd VISR
 
 ## Starting, Stopping and Resetting the Stack
 
+Start the Docker stack, pulling all required images and launching containers
+Automatically opens Grafana and InfluxDB in the browser
 ```bash
-# Clone the repository
-git clone https://github.com/jf788-dev/VISR.git
-cd VISR
-
-# Start the Docker stack, pulling all required images and launching containers
-# Automatically opens Grafana and InfluxDB in the browser
 bash start.sh
+```
 
-# Stop the stack (retains all data)
+Stop the stack (retains all data)
+```bash
 bash stop.sh
+```
 
-# Reset the stack (removes all data and containers for a clean start)
+Reset the stack (removes all data and containers for a clean start)
+```bash
 bash reset.sh
 ```
 
@@ -62,7 +62,9 @@ Login to Grafana as admin using given credentials. Optionally change password. /
 
 Navigate to Data Sources, Add data Source (http://localhost:3000/connections/datasources/new) and select influxdb: 
 
-Query language 'Flux' URL set to http://influxdb:8086 turn off 'basic auth'
+Query language 'Flux' URL set to http://influxdb:8086 
+
+turn off 'basic auth'
 
 Set 'Oranization' to VISR
 
