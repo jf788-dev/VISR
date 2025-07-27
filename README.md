@@ -83,7 +83,7 @@ python3 data_sim.py
 
 ## Building a Basic Dashboard
 
-Select add visualisation and select the influxdb data source that have just added. 
+Select add visualisation and select the influxdb data source that have just added. Change the time frame above the pane to last 5 minutes and refresh dropdown to Auto.
 
 In the influxdb query scripting box below the 'no data' panel, copy the following code to load in the sim data.
 
@@ -99,7 +99,7 @@ In the influxdb query scripting box below the 'no data' panel, copy the followin
   |> yield(name: "mean")
 ```
 
-  Press 'Query Inspector' and then 'Refresh' afterwhich some data should appear. Change the time frame above the pane to last 5 minutes and refresh dropdown to Auto.
+  Press 'Query Inspector' and then 'Refresh' afterwhich some data should appear. 
 
   On the right hand side, Give the panel a name and optional description. Then press save dashboard. and press back to dashboard on the top panel.
 
