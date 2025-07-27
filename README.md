@@ -18,10 +18,10 @@ This stack launches a full sensor data pipeline including:
 
 ## Clone the Repository
 
-<pre>
+```bash
 git clone https://github.com/jf788-dev/VISR.git
 cd VISR
-</pre>
+```
 
 
 ## Starting, Stopping and Resetting the Stack
@@ -75,9 +75,9 @@ leave everything else as blank or default and press 'save & test' then 'building
 Before building a dashboard run the following script to generate a live feed of test data. 
 
 ## Test Telemetry
-<pre>
+```bash
 python3 data_sim.py
-</pre>
+```
 
 ## Building a Basic Dashboard
 
@@ -85,7 +85,8 @@ Select add visualisation and select the influxdb data source that have just adde
 
 In the influxdb query scripting box below the 'no data' panel, copy the following code to load in the sim data.
 
-<pre>from(bucket: "Data")
+```bash
+  from(bucket: "Data")
   |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
   |> filter(fn: (r) => r["_field"] == "count_rate")
@@ -93,7 +94,8 @@ In the influxdb query scripting box below the 'no data' panel, copy the followin
   |> filter(fn: (r) => r["sensor_id"] == "detector-1" or r["sensor_id"] == "detector-2" or r["sensor_id"] == "detector-3")
   |> filter(fn: (r) => r["topic"] == "radiation/detectors")
   |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
-  |> yield(name: "mean")</pre>
+  |> yield(name: "mean")
+```
 
   Press 'Query Inspector' and then 'Refresh' afterwhich some data should appear. Change the time frame above the pane to last 5 minutes and refresh dropdown to Auto.
 
