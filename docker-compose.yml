@@ -41,6 +41,10 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana.ini:/etc/grafana/grafana.ini
+      - ./config/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./config/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/dashboards:/var/lib/grafana/dashboards
+      
 
 volumes:
   influxdb_data:
