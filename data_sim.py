@@ -4,7 +4,7 @@ import json
 import random
 
 # Configuration
-BROKER = "localhost"  # or IP of your broker
+BROKER = "172.26.1.40"  # or IP of your broker
 TOPIC = "radiation/detectors"
 
 # Detector configurations (mean, std_dev)
