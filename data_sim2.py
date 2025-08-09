@@ -5,7 +5,7 @@ import json
 import random
 
 # --- Config ---
-BROKER = "localhost"   # MQTT broker address
+BROKER = "192.168.1.162"   # MQTT broker address
 PORT = 1883
 TOPIC = "radiation/detectors"
 
