@@ -1,0 +1,65 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 6,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 21,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<table style=\"width:100%\">\n  <tr>\n    <td><h3>Camera 0</h3>\n      <img src=\"http://192.168.1.162:8000/stream0.mjpg\" width=\"640\" height=\"480\" />\n    </td>\n    <td><h3>Camera 1</h3>\n      <img src=\"http://192.168.1.162:8000/stream1.mjpg\" width=\"640\" height=\"480\" />\n    </td>\n  </tr>\n</table>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "New panel",
+      "type": "text"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Dual Video Stream",
+  "uid": "543b3e8f-aaa8-4496-96ab-a915eb691c80",
+  "version": 2
+}
