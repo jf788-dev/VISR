@@ -7,4 +7,4 @@ datasources:
     editable: true
     jsonData:
       allowedHosts:
-        - datasets
+        - http://datasets/
