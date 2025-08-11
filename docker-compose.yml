@@ -49,7 +49,7 @@ services:
     depends_on:
     - datasets
     environment:
-    - GF_INSTALL_PLUGINS=macrcusolsson-dynamictext-panel,yesoreyeram-infinity-datasource
+    - GF_INSTALL_PLUGINS=marcusolsson-dynamictext-panel,yesoreyeram-infinity-datasource
     volumes:
     - grafana_data:/var/lib/grafana
     - ./config/grafana.ini:/etc/grafana/grafana.ini
