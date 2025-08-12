@@ -5,7 +5,7 @@ import json
 import random
 
 # --- MQTT ---
-BROKER = "192.168.1.188"
+BROKER = "198.18.5.150"
 PORT = 1883
 TOPIC = "radiation/detectors"   # one topic for all detectors
 
