@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -68,6 +68,7 @@
             }
           },
           "decimals": 3,
+          "displayName": "${__field.labels.sensor_id} - ${__field.name}",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -88,7 +89,7 @@
       },
       "gridPos": {
         "h": 11,
-        "w": 23,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -110,9 +111,10 @@
         }
       },
       "pluginVersion": "12.1.0",
+      "repeatDirection": "h",
       "targets": [
         {
-          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"ORTEC01_gamma_dose_rate_uSv_h\" or r[\"_field\"] == \"ORTEC01_neutron_dose_rate_uSv_h\")\n  |> filter(fn: (r) => r[\"host\"] == \"VISR\")\n  |> filter(fn: (r) => r[\"sensor_id\"] == \"ORTEC01\")\n  |> filter(fn: (r) => r[\"topic\"] == \"radiation/detectors\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"mqtt_consumer\")\n  |> filter(fn: (r) => r._field == \"gamma_current_dose_uSv_h\" or r._field == \"neutron_current_dose_uSv_h\")\n  |> filter(fn: (r) => r.host == \"VISR\")\n  |> filter(fn: (r) => r.sensor_id =~ /^${detector:regex}$/)\n  |> filter(fn: (r) => r.topic == \"radiation/detectors\")\n  |> map(fn: (r) => ({\n      r with\n      _field: if r._field == \"gamma_current_dose_uSv_h\" then \"Gamma dose (µSv/h)\"\n              else \"Neutron dose (µSv/h)\"\n    }))",
           "refId": "A"
         }
       ],
@@ -130,6 +132,7 @@
             "mode": "continuous-GrYlRd"
           },
           "decimals": 0,
+          "displayName": "${__field.labels.sensor_id}",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -150,7 +153,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 5,
+        "w": 12,
         "x": 0,
         "y": 11
       },
@@ -177,10 +180,7 @@
         },
         "showUnfilled": true,
         "sizing": "auto",
-        "text": {
-          "titleSize": 22,
-          "valueSize": 65
-        },
+        "text": {},
         "valueMode": "color"
       },
       "pluginVersion": "12.1.0",
@@ -190,7 +190,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"ORTEC01_gamma_count_rate_cps\")\n  |> filter(fn: (r) => r[\"host\"] == \"VISR\")\n  |> filter(fn: (r) => r[\"sensor_id\"] == \"ORTEC01\")\n  |> filter(fn: (r) => r[\"topic\"] == \"radiation/detectors\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"mqtt_consumer\")\n  |> filter(fn: (r) => r._field == \"gamma_current_count_rate_cps\")\n  |> filter(fn: (r) => r.host == \"VISR\")\n  |> filter(fn: (r) => r.sensor_id =~ /^${detector:regex}$/)\n  |> filter(fn: (r) => r.topic == \"radiation/detectors\")",
           "refId": "A"
         }
       ],
@@ -207,7 +207,7 @@
           "color": {
             "mode": "continuous-GrYlRd"
           },
-          "decimals": 0,
+          "displayName": "${__field.labels.sensor_id}",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -228,8 +228,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 5,
-        "x": 5,
+        "w": 11,
+        "x": 12,
         "y": 11
       },
       "id": 2,
@@ -255,10 +255,7 @@
         },
         "showUnfilled": true,
         "sizing": "auto",
-        "text": {
-          "titleSize": 22,
-          "valueSize": 65
-        },
+        "text": {},
         "valueMode": "color"
       },
       "pluginVersion": "12.1.0",
@@ -268,7 +265,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"ORTEC01_neutron_count_rate_cps\")\n  |> filter(fn: (r) => r[\"host\"] == \"VISR\")\n  |> filter(fn: (r) => r[\"sensor_id\"] == \"ORTEC01\")\n  |> filter(fn: (r) => r[\"topic\"] == \"radiation/detectors\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"Data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"mqtt_consumer\")\n  |> filter(fn: (r) => r._field == \"neutron_current_count_rate_cps\")\n  |> filter(fn: (r) => r.host == \"VISR\")\n  |> filter(fn: (r) => r.sensor_id =~ /^${detector:regex}$/)\n  |> filter(fn: (r) => r.topic == \"radiation/detectors\")",
           "refId": "A"
         }
       ],
@@ -281,7 +278,30 @@
   "schemaVersion": 41,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n  bucket: \"Data\",\n  tag: \"sensor_id\",\n  predicate: (r) => r._measurement == \"mqtt_consumer\" and r.topic == \"radiation/detectors\",\n  start: -30d\n)",
+        "description": "",
+        "includeAll": true,
+        "multi": true,
+        "name": "detector",
+        "options": [],
+        "query": {
+          "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n  bucket: \"Data\",\n  tag: \"sensor_id\",\n  predicate: (r) => r._measurement == \"mqtt_consumer\" and r.topic == \"radiation/detectors\",\n  start: -30d\n)"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-5m",
@@ -291,5 +311,5 @@
   "timezone": "browser",
   "title": "Detector Metrics",
   "uid": "9f0f5659-8e44-4442-a10d-b00d415c40c8",
-  "version": 10
+  "version": 2
 }

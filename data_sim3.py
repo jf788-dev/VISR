@@ -1,11 +1,12 @@
 import paho.mqtt.client as mqtt
-import requests, time, json
+import requests, time, json, random
 
 BROKER = "localhost"
 TOPIC = "radiation/detectors"
 IPS = ["198.18.5.144", "198.18.5.145", "198.18.5.146"]
 TIMEOUT = 5
 PERIOD = 1.0
+SIMULATE = True  # Set to False for real API calls
 
 FIELDS = {
     "gamma_current_count_rate_cps": {"DetectorType": "Gamma",  "Remark": "Current", "path": ["CountRate", "value"], "type": float},
@@ -25,20 +26,59 @@ FIELDS = {
 client = mqtt.Client()
 client.connect(BROKER, 1883, 60)
 
+def generate_fake_response(ip):
+    return {
+        "Measurement": {
+            "CountDoseData": [
+                {
+                    "DetectorType": "Gamma",
+                    "Detector": "HpGe 67mm x 52mm",
+                    "Alarm": random.choice([True, False]),
+                    "AlarmDescription": "",
+                    "StartTime": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "Remark": "Current",
+                    "DoseRate": [
+                        {"value": round(random.uniform(0.3, 0.5), 6), "unit": "µSv/h"},
+                        {"value": round(random.uniform(0.03, 0.05), 6), "unit": "mrem/h"}
+                    ],
+                    "CountRate": {"value": random.randint(500, 800), "unit": "cps"}
+                },
+                {
+                    "DetectorType": "Li6F/ZnS",
+                    "Detector": "Neutron",
+                    "Alarm": random.choice([True, False]),
+                    "AlarmDescription": "",
+                    "StartTime": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "Remark": "Current",
+                    "DoseRate": [
+                        {"value": round(random.uniform(0.05, 0.2), 6), "unit": "µSv/h"},
+                        {"value": round(random.uniform(0.005, 0.02), 6), "unit": "mrem/h"}
+                    ],
+                    "CountRate": {"value": round(random.uniform(0.1, 1.0), 3), "unit": "cps"}
+                }
+            ],
+            "MeasurementLocation": {"Coordinates": [round(random.uniform(-90, 90), 6),
+                                                    round(random.uniform(-180, 180), 6)]}
+        }
+    }
+
 try:
     while True:
         t0 = time.time()
         ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
         for ip in IPS:
-            url = f"http://{ip}/remote/v1/measurement/doseCountRate"
-            try:
-                r = requests.get(url, timeout=TIMEOUT)
-                r.raise_for_status()
-                data = r.json()
-            except Exception as e:
-                print(f"{ip} fetch error: {e}")
-                continue  # Skip publishing for this IP
+            if SIMULATE:
+                data = generate_fake_response(ip)
+            else:
+                url = f"http://{ip}/remote/v1/measurement/doseCountRate"
+                try:
+                    r = requests.get(url, timeout=TIMEOUT)
+                    r.raise_for_status()
+                    data = r.json()
+                except Exception as e:
+                    print(f"{ip} fetch error: {e}")
+                    continue
 
             meas = data.get("Measurement", {}) if isinstance(data, dict) else {}
             count_data = meas.get("CountDoseData", []) or []
