@@ -31,7 +31,6 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=Data
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=visr-token
 
-  # Static file server for CSV/JSON/etc 
   datasets:
     image: nginx:alpine
     container_name: datasets
@@ -49,7 +48,7 @@ services:
     depends_on:
     - datasets
     environment:
-    - GF_INSTALL_PLUGINS=marcusolsson-dynamictext-panel,yesoreyeram-infinity-datasource
+    - GF_INSTALL_PLUGINS=volkovlabs-form-panel,marcusolsson-dynamictext-panel,yesoreyeram-infinity-datasource
     volumes:
     - grafana_data:/var/lib/grafana
     - ./config/grafana.ini:/etc/grafana/grafana.ini
@@ -57,6 +56,43 @@ services:
     - ./config/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     - ./config/dashboards:/var/lib/grafana/dashboards
 
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./config/postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres  
+
+  visr_api:
+    image: python:3.12
+    container_name: visr_api
+    working_dir: /app
+    volumes:
+      - ./services/visr_api:/app
+    environment:
+      DB_DSN: "dbname=postgres user=postgres password=admin host=postgres"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 5000"
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+
 volumes:
   influxdb_data:
   grafana_data:
+  postgres_data:
