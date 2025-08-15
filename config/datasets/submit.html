@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VISR • Add Asset</title>
+<style>
+  body { background: #0b0f17; color: #e6edf3; font-family: system-ui, sans-serif;
+         display: flex; justify-content: center; padding: 40px; }
+  .card { background: rgba(255,255,255,0.06); padding: 20px; border-radius: 12px;
+          width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  h2 { margin-top: 0; }
+  label { display: block; margin: 10px 0 5px; }
+  input, select { width: 100%; padding: 10px; border-radius: 8px; border: none;
+                  background: rgba(255,255,255,0.1); color: #fff; }
+  button { margin-top: 20px; padding: 10px; width: 100%;
+           background: #7c9cff; color: #000; border: none; border-radius: 8px;
+           font-weight: bold; cursor: pointer; }
+  button:hover { background: #91adff; }
+  .status { margin-top: 10px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Add Asset</h2>
+  <form id="f">
+    <label for="asset_name">Asset Name</label>
+    <input id="asset_name" required>
+
+    <label for="asset_type">Asset Type</label>
+    <select id="asset_type">
+      <option>RADIO</option>
+      <option>SENSOR</option>
+      <option>EUD</option>
+    </select>
+
+    <label for="asset_ip">Asset IP</label>
+    <input id="asset_ip" required placeholder="192.168.1.50">
+
+    <button type="submit">Submit</button>
+    <div id="status" class="status"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('f');
+  const statusEl = document.getElementById('status');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = 'Submitting...';
+
+    const payload = {
+      asset_name: document.getElementById('asset_name').value.trim(),
+      asset_type: document.getElementById('asset_type').value.trim().toUpperCase(),
+      asset_ip: document.getElementById('asset_ip').value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/assets?on_conflict=asset_name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation,resolution=merge-duplicates'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        statusEl.textContent = `Error: ${err}`;
+      } else {
+        statusEl.textContent = '✅ Saved successfully';
+        form.reset();
+      }
+    } catch (err) {
+      statusEl.textContent = `Network error: ${err}`;
+    }
+  });
+</script>
+
+</body>
+</html>

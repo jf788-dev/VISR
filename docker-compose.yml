@@ -34,11 +34,12 @@ services:
   datasets:
     image: nginx:alpine
     container_name: datasets
+    restart: unless-stopped
     ports:
       - "8081:80"
     volumes:
       - ./config/datasets:/usr/share/nginx/html:ro
-    restart: unless-stopped
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
 
   grafana:
     image: grafana/grafana-oss:latest
@@ -57,17 +58,32 @@ services:
     - ./config/dashboards:/var/lib/grafana/dashboards
 
   postgres:
-    image: postgres
+    image: postgres:17
     container_name: postgres
     restart: always
-    shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: admin
-    volumes:
-      - postgres_data:/var/lib/postgresql
-      - ./config/postgres/init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/postgres/init:/docker-entrypoint-initdb.d:ro
+
+  postgrest:
+    image: postgrest/postgrest:latest
+    container_name: postgrest
+    depends_on:
+      - postgres
+    environment:
+      PGRST_DB_URI: postgres://postgres:admin@postgres:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_SERVER_HOST: 0.0.0.0
+      PGRST_SERVER_PORT: 3001
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: "*"
+      PGRST_SERVER_CORS_ALLOW_HEADERS: "content-type, prefer, authorization"
+    ports:
+      - "3001:3001"
 
   adminer:
     image: adminer
@@ -78,19 +94,6 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: postgres  
 
-  visr_api:
-    image: python:3.12
-    container_name: visr_api
-    working_dir: /app
-    volumes:
-      - ./services/visr_api:/app
-    environment:
-      DB_DSN: "dbname=postgres user=postgres password=admin host=postgres"
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 5000"
-    depends_on:
-      - postgres
-    ports:
-      - "5000:5000"
 
 volumes:
   influxdb_data:
