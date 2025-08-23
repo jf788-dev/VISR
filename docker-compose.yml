@@ -96,31 +96,28 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: postgres
 
-  filebrowser_init:
+  filebrowser_bootstrap:
     image: filebrowser/filebrowser:latest
-    container_name: filebrowser_init
-    # Creates the DB if missing and sets the admin password
-    command: ["users","add","admin","adminpassword","--perm.admin","--database","/config/filebrowser.db"]
+    container_name: filebrowser_bootstrap
+    command: ["config","set","--auth.method=noauth","--database","/database/filebrowser.db"]
     volumes:
-      - ./filebrowser/config:/config
+      - ./filebrowser/db:/database
     restart: "no"
 
   filebrowser:
     image: filebrowser/filebrowser:latest
     container_name: filebrowser
     depends_on:
-      - filebrowser_init
+      - filebrowser_bootstrap
+    user: "1000:1000"
     ports:
       - "8095:80"
+    command: ["--config","/config/settings.json"]
     volumes:
-      - ./filebrowser/config:/config          # holds filebrowser.db + settings.json
-      - ./filebrowser/data:/srv               # your files
-    environment:
-      - FB_AUTH_METHOD=default
-      - FB_DATABASE=/config/filebrowser.db    # force DB path
-      - FB_BASEURL=/filebrowser
+      - ./filebrowser/data:/srv                 # files to serve
+      - ./filebrowser/db:/database              # persist the DB the bootstrap touched
+      - ./filebrowser/config:/config            # holds settings.json
     restart: unless-stopped
-
   
 
 volumes:

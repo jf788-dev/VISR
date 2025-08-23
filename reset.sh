@@ -8,7 +8,6 @@ if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
 
     # Remove FileBrowser bind-mount data
     echo "Clearing FileBrowser data and config..."
-    rm -rf ./filebrowser/config/*
     rm -rf ./filebrowser/data/*
 
     echo "All services stopped, volumes deleted, and FileBrowser data cleared."
